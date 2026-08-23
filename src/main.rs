@@ -1,9 +1,9 @@
-#[allow(unused_imports)]
 use std::io::{self, Write};
 use std::str::FromStr;
 
 enum AvailableCommands {
     Echo,
+    Type,
     Exit,
 }
 
@@ -13,6 +13,7 @@ impl FromStr for AvailableCommands {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "echo" => Ok(Self::Echo),
+            "type" => Ok(Self::Type),
             "exit" => Ok(Self::Exit),
             _ => Err(format!("{}: command not found", s)),
         }
@@ -39,18 +40,20 @@ fn main() {
             continue;
         }
 
-        let builtin: Result<AvailableCommands, String> =
-            command.split_whitespace().next().unwrap().parse();
+        let args = command.split_whitespace().collect::<Vec<_>>();
 
-        let args = command
-            .split_whitespace()
-            .skip(1)
-            .collect::<Vec<_>>()
-            .join(" ");
+        let builtin: Result<AvailableCommands, String> = args[0].parse();
 
         match builtin {
             Ok(AvailableCommands::Echo) => {
-                echo(args);
+                echo(args.join(" "));
+            }
+            Ok(AvailableCommands::Type) => {
+                if args[1].parse::<AvailableCommands>().is_ok() {
+                    println!("{} is a shell builtin", args[1]);
+                } else {
+                    println!("{}: not found", args[1]);
+                }
             }
             Ok(AvailableCommands::Exit) => {
                 break 'main;
