@@ -46,7 +46,7 @@ fn main() {
 
         match builtin {
             Ok(AvailableCommands::Echo) => {
-                echo(args.join(" "));
+                println!("{}", args[1..].join(" "));
             }
             Ok(AvailableCommands::Type) => {
                 if args[1].parse::<AvailableCommands>().is_ok() {
