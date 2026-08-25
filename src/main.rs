@@ -1,3 +1,4 @@
+use std::env::current_dir;
 use std::io::{self, Write};
 use std::process::Command;
 use std::str::FromStr;
@@ -7,6 +8,7 @@ enum AvailableCommands {
     Echo,
     Type,
     Exit,
+    PWD,
 }
 
 impl FromStr for AvailableCommands {
@@ -17,6 +19,7 @@ impl FromStr for AvailableCommands {
             "echo" => Ok(Self::Echo),
             "type" => Ok(Self::Type),
             "exit" => Ok(Self::Exit),
+            "pwd" => Ok(Self::PWD),
             _ => Err(format!("{}: command not found", s)),
         }
     }
@@ -57,6 +60,10 @@ fn main() {
                     }
                 }
             }
+            Ok(AvailableCommands::PWD) => {
+                let current_dir = std::env::current_dir().expect("Failed to get current_dir");
+                print!("{}", current_dir.to_string_lossy());
+            }
             Ok(AvailableCommands::Exit) => {
                 break 'main;
             }
@@ -75,12 +82,12 @@ fn main() {
                             eprint!("{}", output);
                         }
                     }
-                    io::stderr().flush().unwrap();
-                    io::stdout().flush().unwrap();
                 } else {
                     println!("{}", e);
                 }
             }
         }
+        io::stderr().flush().unwrap();
+        io::stdout().flush().unwrap();
     }
 }
