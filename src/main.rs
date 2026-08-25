@@ -62,7 +62,7 @@ fn main() {
             }
             Err(e) => {
                 if let Ok(path) = which(args[0]) {
-                    let result = Command::new(&path)
+                    let result = Command::new(command)
                         .args(&args[1..])
                         .output()
                         .expect("failed to execute command");
