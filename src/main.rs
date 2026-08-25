@@ -1,5 +1,6 @@
 use std::io::{self, Write};
 use std::str::FromStr;
+use which::which;
 
 enum AvailableCommands {
     Echo,
@@ -18,10 +19,6 @@ impl FromStr for AvailableCommands {
             _ => Err(format!("{}: command not found", s)),
         }
     }
-}
-
-fn echo(s: String) {
-    println!("{}", s);
 }
 
 fn main() {
@@ -52,7 +49,11 @@ fn main() {
                 if args[1].parse::<AvailableCommands>().is_ok() {
                     println!("{} is a shell builtin", args[1]);
                 } else {
-                    println!("{}: not found", args[1]);
+                    if let Ok(path) = which(args[1]) {
+                        println!("{} is {}", args[1], path.to_string_lossy());
+                    } else {
+                        println!("{}: not found", args[1]);
+                    }
                 }
             }
             Ok(AvailableCommands::Exit) => {
