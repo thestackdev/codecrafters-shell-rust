@@ -1,4 +1,5 @@
 use std::io::{self, Write};
+use std::process::Command;
 use std::str::FromStr;
 use which::which;
 
@@ -60,7 +61,17 @@ fn main() {
                 break 'main;
             }
             Err(e) => {
-                println!("{}", e);
+                if let Ok(path) = which(args[0]) {
+                    let result = Command::new(&path)
+                        .args(&args[1..])
+                        .output()
+                        .expect("failed to execute command");
+                    if let Ok(output) = str::from_utf8(&result.stdout) {
+                        println!("{}", output);
+                    }
+                } else {
+                    println!("{}", e);
+                }
             }
         }
     }
