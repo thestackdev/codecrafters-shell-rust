@@ -62,7 +62,7 @@ fn main() {
             }
             Ok(AvailableCommands::PWD) => {
                 let current_dir = std::env::current_dir().expect("Failed to get current_dir");
-                print!("{}", current_dir.to_string_lossy());
+                println!("{}", current_dir.to_string_lossy());
             }
             Ok(AvailableCommands::Exit) => {
                 break 'main;
