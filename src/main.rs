@@ -62,13 +62,21 @@ fn main() {
             }
             Err(e) => {
                 if let Ok(path) = which(args[0]) {
-                    let result = Command::new(command)
+                    let result = Command::new(args[0])
                         .args(&args[1..])
                         .output()
                         .expect("failed to execute command");
-                    if let Ok(output) = str::from_utf8(&result.stdout) {
-                        println!("{}", output);
+                    if result.status.success() {
+                        if let Ok(output) = str::from_utf8(&result.stdout) {
+                            print!("{}", output);
+                        }
+                    } else {
+                        if let Ok(output) = str::from_utf8(&result.stderr) {
+                            eprint!("{}", output);
+                        }
                     }
+                    io::stderr().flush().unwrap();
+                    io::stdout().flush().unwrap();
                 } else {
                     println!("{}", e);
                 }
