@@ -1,4 +1,4 @@
-use std::env::current_dir;
+use std::env::{current_dir, home_dir};
 use std::io::{self, Write};
 use std::process::Command;
 use std::str::FromStr;
@@ -43,7 +43,7 @@ fn main() {
             continue;
         }
 
-        let args = command.split_whitespace().collect::<Vec<_>>();
+        let mut args = command.split_whitespace().collect::<Vec<_>>();
 
         let builtin: Result<AvailableCommands, String> = args[0].parse();
 
@@ -52,6 +52,17 @@ fn main() {
                 println!("{}", args[1..].join(" "));
             }
             Ok(AvailableCommands::CD) => {
+                let mut expanded = String::new();
+
+                if let Some(homedir) = std::env::home_dir()
+                    && args[1].starts_with("~")
+                {
+                    expanded =
+                        args[1].replace("~", homedir.to_str().expect("Failed to parse homedir"));
+                }
+
+                args[1] = expanded.as_str();
+
                 if std::env::set_current_dir(args[1]).is_err() {
                     println!("cd: {}: No such file or directory", args[1]);
                 }
