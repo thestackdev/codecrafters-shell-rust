@@ -9,6 +9,7 @@ enum AvailableCommands {
     Type,
     Exit,
     PWD,
+    CD,
 }
 
 impl FromStr for AvailableCommands {
@@ -20,6 +21,7 @@ impl FromStr for AvailableCommands {
             "type" => Ok(Self::Type),
             "exit" => Ok(Self::Exit),
             "pwd" => Ok(Self::PWD),
+            "cd" => Ok(Self::CD),
             _ => Err(format!("{}: command not found", s)),
         }
     }
@@ -48,6 +50,11 @@ fn main() {
         match builtin {
             Ok(AvailableCommands::Echo) => {
                 println!("{}", args[1..].join(" "));
+            }
+            Ok(AvailableCommands::CD) => {
+                if std::env::set_current_dir(args[1]).is_err() {
+                    println!("cd: {}: No such file or directory", args[1]);
+                }
             }
             Ok(AvailableCommands::Type) => {
                 if args[1].parse::<AvailableCommands>().is_ok() {
