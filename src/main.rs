@@ -53,12 +53,16 @@ fn main() {
             }
             Ok(AvailableCommands::CD) => {
                 let mut expanded = String::new();
+                let homedir = std::env::home_dir()
+                    .expect("Failed to get home dir")
+                    .to_string_lossy()
+                    .to_string();
 
-                if let Some(homedir) = std::env::home_dir()
-                    && args[1].starts_with("~")
-                {
-                    expanded =
-                        args[1].replace("~", homedir.to_str().expect("Failed to parse homedir"));
+                if args.len() <= 1 {
+                    args.push("");
+                    expanded = homedir;
+                } else if args[1].starts_with("~") {
+                    expanded = args[1].replace("~", homedir.as_str());
                 }
 
                 args[1] = expanded.as_str();
