@@ -58,14 +58,16 @@ fn main() {
                     .to_string_lossy()
                     .to_string();
 
-                if args.len() <= 1 {
+                if args.len() == 1 {
                     args.push("");
                     expanded = homedir;
                 } else if args[1].starts_with("~") {
                     expanded = args[1].replace("~", homedir.as_str());
                 }
 
-                args[1] = expanded.as_str();
+                if !expanded.is_empty() {
+                    args[1] = expanded.as_str();
+                }
 
                 if std::env::set_current_dir(args[1]).is_err() {
                     println!("cd: {}: No such file or directory", args[1]);
