@@ -9,7 +9,7 @@ pub fn parse_args(s: &str) -> Vec<String> {
 
     for ch in s.chars() {
         match ch {
-            '\\' if !should_ignore_char => {
+            '\\' if !should_ignore_char && !within_single_quote => {
                 should_ignore_char = true;
                 has_content = true;
             }
