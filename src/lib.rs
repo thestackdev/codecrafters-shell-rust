@@ -28,7 +28,7 @@ pub fn start() {
             continue;
         }
 
-        let mut args = utils::parse_args(command);
+        let args = utils::parse_args(command);
 
         let current_command = AvailableCommands::from_str(&args[0]);
 

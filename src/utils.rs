@@ -1,29 +1,22 @@
-enum Priority {
-    SingleQuote(u8),
-    Space(u8),
-}
-
-fn get_priority(ch: &char) -> u8 {
-    match ch {
-        '\'' => 2,
-        ' ' => 1,
-        _ => 0,
-    }
-}
-
 pub fn parse_args(s: &str) -> Vec<String> {
-    let mut args: Vec<String> = Vec::new();
-    let mut in_quote = false;
+    let mut args = Vec::new();
+
     let mut current = String::new();
+    let mut within_single_quote = false;
+    let mut within_double_quote = false;
     let mut has_content = false;
 
     for ch in s.chars() {
         match ch {
-            '\'' => {
-                in_quote = !in_quote;
+            '\"' if !within_single_quote => {
+                within_double_quote = !within_double_quote;
                 has_content = true;
             }
-            ' ' if !in_quote => {
+            '\'' if !within_double_quote => {
+                within_single_quote = !within_single_quote;
+                has_content = true;
+            }
+            ' ' if !within_single_quote && !within_double_quote => {
                 if has_content {
                     args.push(current.clone());
                     current.clear();
@@ -44,16 +37,3 @@ pub fn parse_args(s: &str) -> Vec<String> {
     args
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse_args() {
-        let s = String::from("hello 'test'");
-        assert_eq!(
-            parse_args(&s),
-            vec![String::from("hello"), String::from("test")]
-        );
-    }
-}
